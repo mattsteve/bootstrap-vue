@@ -1,4 +1,4 @@
-import { Vue } from '../../../vue'
+import { Vue, isVue3 } from '../../../vue'
 import {
   EVENT_NAME_ROW_CLICKED,
   EVENT_NAME_ROW_HOVERED,
@@ -35,6 +35,16 @@ export const props = {
 export const tbodyRowMixin = Vue.extend({
   mixins: [useParentMixin],
   props,
+  created() {
+    if (isVue3) {
+      this.$refs['item-rows'] = []
+    }
+  },
+  beforeUpdate() {
+    if (isVue3) {
+      this.$refs['item-rows'] = []
+    }
+  },
   methods: {
     // Methods for computing classes, attributes and styles for table cells
     getTdValues(item, key, tdValue, defaultValue) {
@@ -72,6 +82,12 @@ export const tbodyRowMixin = Vue.extend({
         value = formatter(value, key, item)
       }
       return isUndefinedOrNull(value) ? '' : value
+    },
+    // Vue 3 compat
+    setItemRowsRef(el) {
+      if (el) {
+        this.$refs['item-rows'].push(el)
+      }
     },
     // Factory function methods
     toggleDetailsFactory(hasDetailsSlot, item) {
@@ -270,7 +286,7 @@ export const tbodyRowMixin = Vue.extend({
               mouseleave: this.rowUnhovered
             },
             key: `__b-table-row-${rowKey}__`,
-            ref: 'item-rows',
+            ref: isVue3 ? this.setItemRowsRef : 'item-rows',
             refInFor: true
           },
           $tds

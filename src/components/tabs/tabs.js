@@ -1,4 +1,4 @@
-import { COMPONENT_UID_KEY, Vue } from '../../vue'
+import { COMPONENT_UID_KEY, Vue, isVue3 } from '../../vue'
 import { NAME_TABS, NAME_TAB_BUTTON_HELPER } from '../../constants/components'
 import { IS_BROWSER } from '../../constants/env'
 import {
@@ -313,9 +313,17 @@ export const BTabs = /*#__PURE__*/ Vue.extend({
   created() {
     // Create private non-reactive props
     this.$_observer = null
+    if (isVue3) {
+      this.$refs.buttons = []
+    }
   },
   mounted() {
     this.setObserver(true)
+  },
+  beforeUpdate() {
+    if (isVue3) {
+      this.$refs.buttons = []
+    }
   },
   beforeDestroy() {
     this.setObserver(false)
@@ -534,6 +542,12 @@ export const BTabs = /*#__PURE__*/ Vue.extend({
         this.focusButton($tab)
         this.emitTabClick($tab, focus)
       }
+    },
+    // Vue 3 compat
+    setButtonsRef(el) {
+      if (el) {
+        this.$refs.buttons.push(el)
+      }
     }
   },
   render(h) {
@@ -596,8 +610,8 @@ export const BTabs = /*#__PURE__*/ Vue.extend({
           [EVENT_NAME_LAST]: lastTab
         },
         key: $tab[COMPONENT_UID_KEY] || index,
-        ref: 'buttons',
-        // Needed to make `this.$refs.buttons` an array
+        ref: isVue3 ? this.setButtonsRef : 'buttons',
+        // Needed to make `this.$refs.buttons` an array (for Vue 2)
         refInFor: true
       })
     })

@@ -1,5 +1,5 @@
 // BTime control (not form input control)
-import { Vue } from '../../vue'
+import { Vue, isVue3 } from '../../vue'
 import { NAME_TIME } from '../../constants/components'
 import { EVENT_NAME_CONTEXT } from '../../constants/events'
 import { CODE_LEFT, CODE_RIGHT } from '../../constants/key-codes'
@@ -292,9 +292,17 @@ export const BTime = /*#__PURE__*/ Vue.extend({
     this.$nextTick(() => {
       this.$emit(EVENT_NAME_CONTEXT, this.context)
     })
+    if (isVue3) {
+      this.$refs.spinners = []
+    }
   },
   mounted() {
     this.setLive(true)
+  },
+  beforeUpdate() {
+    if (isVue3) {
+      this.$refs.spinners = []
+    }
   },
   /* istanbul ignore next */
   activated() {
@@ -388,6 +396,12 @@ export const BTime = /*#__PURE__*/ Vue.extend({
       } else {
         this.isLive = false
       }
+    },
+    // Vue 3 compat
+    setSpinnersRef(el) {
+      if (el) {
+        this.$refs.spinners.push(el)
+      }
     }
   },
   render(h) {
@@ -440,7 +454,7 @@ export const BTime = /*#__PURE__*/ Vue.extend({
           change: handler
         },
         key,
-        ref: 'spinners',
+        ref: isVue3 ? this.setSpinnersRef : 'spinners',
         refInFor: true
       })
     }
