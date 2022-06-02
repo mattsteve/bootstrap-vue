@@ -11,7 +11,7 @@ const docsDir = path.resolve(baseDir, 'docs')
 // Import project `package.json`
 const pkg = require(path.resolve(baseDir, 'package.json'))
 
-const libraryName = pkg.name
+const libraryName = 'bootstrap-vue'
 const libraryVersion = pkg.version
 const baseDocs = pkg.homepage.replace(/\/$/, '')
 
