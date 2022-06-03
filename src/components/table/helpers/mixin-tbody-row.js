@@ -35,14 +35,19 @@ export const props = {
 export const tbodyRowMixin = Vue.extend({
   mixins: [useParentMixin],
   props,
+  data() {
+    return {
+      itemRowsRef: []
+    }
+  },
   created() {
     if (isVue3) {
-      this.$refs['item-rows'] = []
+      this.itemRowsRef = []
     }
   },
   beforeUpdate() {
     if (isVue3) {
-      this.$refs['item-rows'] = []
+      this.itemRowsRef = []
     }
   },
   methods: {
@@ -86,7 +91,7 @@ export const tbodyRowMixin = Vue.extend({
     // Vue 3 compat
     setItemRowsRef(el) {
       if (el) {
-        this.$refs['item-rows'].push(el)
+        this.itemRowsRef.push(el)
       }
     },
     // Factory function methods

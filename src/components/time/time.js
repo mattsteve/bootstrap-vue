@@ -120,7 +120,9 @@ export const BTime = /*#__PURE__*/ Vue.extend({
       modelSeconds: parsed.seconds,
       modelAmpm: parsed.ampm,
       // Internal flag to enable aria-live regions
-      isLive: false
+      isLive: false,
+      // Vue 3 compat
+      spinnersRef: []
     }
   },
   computed: {
@@ -293,7 +295,7 @@ export const BTime = /*#__PURE__*/ Vue.extend({
       this.$emit(EVENT_NAME_CONTEXT, this.context)
     })
     if (isVue3) {
-      this.$refs.spinners = []
+      this.spinnersRef = []
     }
   },
   mounted() {
@@ -301,7 +303,7 @@ export const BTime = /*#__PURE__*/ Vue.extend({
   },
   beforeUpdate() {
     if (isVue3) {
-      this.$refs.spinners = []
+      this.spinnersRef = []
     }
   },
   /* istanbul ignore next */
@@ -320,7 +322,7 @@ export const BTime = /*#__PURE__*/ Vue.extend({
     focus() {
       if (!this.disabled) {
         // We focus the first spin button
-        attemptFocus(this.$refs.spinners[0])
+        attemptFocus((isVue3 ? this.spinnersRef : this.$refs.spinners)[0])
       }
     },
     blur() {
@@ -379,7 +381,7 @@ export const BTime = /*#__PURE__*/ Vue.extend({
         (keyCode === CODE_LEFT || keyCode === CODE_RIGHT)
       ) {
         stopEvent(event)
-        const spinners = this.$refs.spinners || []
+        const spinners = isVue3 ? this.spinnersRef : this.$refs.spinners || []
         let index = spinners.map(cmp => !!cmp.hasFocus).indexOf(true)
         index = index + (keyCode === CODE_LEFT ? -1 : 1)
         index = index >= spinners.length ? 0 : index < 0 ? spinners.length - 1 : index
@@ -400,7 +402,7 @@ export const BTime = /*#__PURE__*/ Vue.extend({
     // Vue 3 compat
     setSpinnersRef(el) {
       if (el) {
-        this.$refs.spinners.push(el)
+        this.spinnersRef.push(el)
       }
     }
   },

@@ -1,4 +1,4 @@
-import { Vue } from '../../../vue'
+import { Vue, isVue3 } from '../../../vue'
 import {
   EVENT_NAME_ROW_CLICKED,
   EVENT_NAME_ROW_CONTEXTMENU,
@@ -54,7 +54,7 @@ export const tbodyMixin = Vue.extend({
     getTbodyTrs() {
       const { $refs } = this
       const tbody = $refs.tbody ? $refs.tbody.$el || $refs.tbody : null
-      const trs = ($refs['item-rows'] || []).map(tr => tr.$el || tr)
+      const trs = (isVue3 ? this.itemRowsRef : $refs['item-rows'] || []).map(tr => tr.$el || tr)
       return tbody && tbody.children && tbody.children.length > 0 && trs && trs.length > 0
         ? arrayFrom(tbody.children).filter(tr => arrayIncludes(trs, tr))
         : /* istanbul ignore next */ []
