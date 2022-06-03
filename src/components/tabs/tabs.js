@@ -234,7 +234,9 @@ export const BTabs = /*#__PURE__*/ Vue.extend({
       // Array of direct child `<b-tab>` instances, in DOM order
       tabs: [],
       // Array of child instances registered (for triggering reactive updates)
-      registeredTabs: []
+      registeredTabs: [],
+      // Vue 3 compat
+      buttonsRef: []
     }
   },
   computed: {
@@ -314,7 +316,7 @@ export const BTabs = /*#__PURE__*/ Vue.extend({
     // Create private non-reactive props
     this.$_observer = null
     if (isVue3) {
-      this.$refs.buttons = []
+      this.buttonsRef = []
     }
   },
   mounted() {
@@ -322,7 +324,7 @@ export const BTabs = /*#__PURE__*/ Vue.extend({
   },
   beforeUpdate() {
     if (isVue3) {
-      this.$refs.buttons = []
+      this.buttonsRef = []
     }
   },
   beforeDestroy() {
@@ -432,7 +434,7 @@ export const BTabs = /*#__PURE__*/ Vue.extend({
     // Find a button that controls a tab, given the tab reference
     // Returns the button vm instance
     getButtonForTab($tab) {
-      return (this.$refs.buttons || []).find($btn => $btn.tab === $tab)
+      return (isVue3 ? this.buttonsRef : this.$refs.buttons || []).find($btn => $btn.tab === $tab)
     },
     // Force a button to re-render its content, given a `<b-tab>` instance
     // Called by `<b-tab>` on `update()`
@@ -546,7 +548,7 @@ export const BTabs = /*#__PURE__*/ Vue.extend({
     // Vue 3 compat
     setButtonsRef(el) {
       if (el) {
-        this.$refs.buttons.push(el)
+        this.buttonsRef.push(el)
       }
     }
   },
